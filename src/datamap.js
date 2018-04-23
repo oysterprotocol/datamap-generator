@@ -1,14 +1,15 @@
 import iota from "./services/iota";
 import Encryption from "./utils/encryption";
 
+import { FILE } from "./config";
+
 export const generate = (handle, size, opts = {}) => {
   let offsets = 1; // Meta chunk
 
   if (opts.includeTreasureOffsets) {
-    const numTreasureChunks = 1;
+    // Includes 1 treasure per sector.
+    const numTreasureChunks = Math.ceil(size / (FILE.CHUNKS_PER_SECTOR - 1));
     offsets += numTreasureChunks;
-    console.log("offsets");
-    console.log(offsets);
   }
 
   const keys = Array.from(Array(size + offsets), (_, i) => i);

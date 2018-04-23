@@ -1,8 +1,17 @@
 import iota from "./services/iota";
 import Encryption from "./utils/encryption";
 
-export const generate = (handle, size) => {
-  const keys = Array.from(Array(size + 1), (_, i) => i);
+export const generate = (handle, size, opts = {}) => {
+  let offsets = 1; // Meta chunk
+
+  if (opts.includeTreasureOffsets) {
+    const numTreasureChunks = 1;
+    offsets += numTreasureChunks;
+    console.log("offsets");
+    console.log(offsets);
+  }
+
+  const keys = Array.from(Array(size + offsets), (_, i) => i);
 
   const [dataMap] = keys.reduce(
     ([dataM, hash], i) => {

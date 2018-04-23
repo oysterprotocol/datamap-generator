@@ -1,7 +1,7 @@
 import iota from "./services/iota";
 import Encryption from "./utils/encryption";
 
-const generate = (handle, size) => {
+export const generate = (handle, size) => {
   const keys = Array.from(Array(size + 1), (_, i) => i);
 
   const [dataMap] = keys.reduce(
@@ -14,5 +14,3 @@ const generate = (handle, size) => {
   );
   return dataMap;
 };
-
-export default {generate};

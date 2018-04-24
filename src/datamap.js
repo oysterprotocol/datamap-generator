@@ -24,3 +24,5 @@ export const generate = (handle, size, opts = {}) => {
   );
   return dataMap;
 };
+
+export default { generate };

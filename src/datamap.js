@@ -26,4 +26,4 @@ export const generate = (genesisHash, size, opts = {}) => {
   return dataMap;
 };
 
-export default { generate };
+export default { generate, genesisHash: Encryption.genesisHash };

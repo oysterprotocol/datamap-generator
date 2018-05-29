@@ -45,8 +45,29 @@ const rawGenerate = (genesisHash, size) => {
   return dataMap;
 };
 
+const {
+  genesisHash,
+  decrypt,
+  decryptTest, //TODO
+  encrypt,
+  getPrimordialHash,
+  getSalt,
+  obfuscate,
+  parseEightCharsOfFilename,
+  sideChain,
+  decryptTreasure} = Encryption;
+
 export default {
   generate,
-  genesisHash: Encryption.genesisHash,
-  rawGenerate
+  genesisHash,
+  rawGenerate,
+  decrypt,
+  decryptTest, //TODO
+  encrypt,
+  getPrimordialHash,
+  getSalt,
+  obfuscate,
+  parseEightCharsOfFilename,
+  sideChain,
+  decryptTreasure
 };

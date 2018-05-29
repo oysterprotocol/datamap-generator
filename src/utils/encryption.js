@@ -26,8 +26,10 @@ const parseEightCharsOfFilename = fileName => {
 
 // `length` should be a multiple of 8
 export function getSalt(length) {
-  const bytes = forge.random.getBytesSync(Math.ceil(length / 8 * 6));
-  return forge.util.encode64(bytes);
+  const bytes = forge.random.getBytesSync(length);
+  const byteArr = forge.util.binary.raw.decode(bytes);
+  const salt = forge.util.binary.base58.encode(byteArr);
+  return salt.substr(0, length);
 }
 
 export function getPrimordialHash() {
@@ -51,7 +53,6 @@ const decryptTest = (text, secretKey) => {
     return "";
   }
 };
-
 
 const decryptTreasure = (
   sideChainHash,

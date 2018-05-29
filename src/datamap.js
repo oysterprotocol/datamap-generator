@@ -37,7 +37,7 @@ const rawGenerate = (genesisHash, size) => {
 
       return [dataM, nextHash];
     },
-    [{}, genesisHash]
+    [{}, forge.util.hexToBytes(genesisHash)]
   );
 
   dataMap[0] = genesisHash;

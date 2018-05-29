@@ -18,7 +18,7 @@ const TREASURE_PREFIX = _.split("Treasure: ", "")
   .join("");
 
 const parseEightCharsOfFilename = fileName => {
-  fileName = fileName + "________";
+  fileName = fileName + getSalt(8);
   fileName = fileName.substr(0, 8);
 
   return fileName;

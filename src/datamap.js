@@ -47,9 +47,9 @@ const rawGenerate = (genesisHash, size) => {
 
 const {
   genesisHash,
-  decrypt,
+  decryptChunk,
   decryptTest, //TODO
-  encrypt,
+  encryptChunk,
   getPrimordialHash,
   getSalt,
   obfuscate,
@@ -61,9 +61,9 @@ export default {
   generate,
   genesisHash,
   rawGenerate,
-  decrypt,
+  decryptChunk,
   decryptTest, //TODO
-  encrypt,
+  encryptChunk,
   getPrimordialHash,
   getSalt,
   obfuscate,

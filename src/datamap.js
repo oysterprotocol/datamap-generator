@@ -26,4 +26,48 @@ export const generate = (genesisHash, size, opts = {}) => {
   return dataMap;
 };
 
-export default { generate, genesisHash: Encryption.genesisHash };
+const rawGenerate = (genesisHash, size) => {
+  const keys = _.range(1, size);
+
+  const [dataMap, _hash] = _.reduce(
+    keys,
+    ([dataM, hash], i) => {
+      const [_obfuscatedHash, nextHash] = Encryption.hashChain(hash);
+      dataM[i] = nextHash;
+
+      return [dataM, nextHash];
+    },
+    [{}, forge.util.hexToBytes(genesisHash)]
+  );
+
+  dataMap[0] = genesisHash;
+
+  return dataMap;
+};
+
+const {
+  genesisHash,
+  decryptChunk,
+  decryptTest, //TODO
+  encryptChunk,
+  getPrimordialHash,
+  getSalt,
+  obfuscate,
+  parseEightCharsOfFilename,
+  sideChain,
+  decryptTreasure} = Encryption;
+
+export default {
+  generate,
+  genesisHash,
+  rawGenerate,
+  decryptChunk,
+  decryptTest, //TODO
+  encryptChunk,
+  getPrimordialHash,
+  getSalt,
+  obfuscate,
+  parseEightCharsOfFilename,
+  sideChain,
+  decryptTreasure
+};

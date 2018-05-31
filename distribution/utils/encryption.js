@@ -89,12 +89,15 @@ var decryptTreasure = function decryptTreasure(sideChainHash, signatureMessageFr
 
 // Genesis hash is not yet obfuscated.
 var genesisHash = function genesisHash(handle) {
-  var _hashChain = hashChain(handle),
+  var primordialHash = handle.substr(8, 64);
+  var byteStr = _nodeForge2.default.util.hexToBytes(primordialHash);
+
+  var _hashChain = hashChain(byteStr),
       _hashChain2 = _slicedToArray(_hashChain, 2),
       _obfuscatedHash = _hashChain2[0],
       genHash = _hashChain2[1];
 
-  return genHash;
+  return _nodeForge2.default.util.bytesToHex(genHash);
 };
 
 // Expects byteString as input

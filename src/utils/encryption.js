@@ -41,7 +41,12 @@ export function getPrimordialHash() {
     .toHex();
 }
 
-const obfuscate = hash => forge.md.sha384.create().update(hash.toString()).digest().toHex();
+const obfuscate = hash =>
+  forge.md.sha384
+    .create()
+    .update(hash.toString())
+    .digest()
+    .toHex();
 
 const sideChain = address => sha3_256(address).toString();
 
@@ -77,9 +82,11 @@ const decryptTreasure = (
 
 // Genesis hash is not yet obfuscated.
 const genesisHash = handle => {
-  const [_obfuscatedHash, genHash] = hashChain(handle);
+  const primordialHash = handle.substr(8, 64);
+  const byteStr = forge.util.hexToBytes(primordialHash);
+  const [_obfuscatedHash, genHash] = hashChain(byteStr);
 
-  return genHash;
+  return forge.util.bytesToHex(genHash);
 };
 
 // Expects byteString as input
@@ -147,7 +154,6 @@ const decryptChunk = (key, secret) => {
     return "";
   }
 };
-
 
 export default {
   hashChain,

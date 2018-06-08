@@ -25,21 +25,21 @@ const parseEightCharsOfFilename = fileName => {
 };
 
 // `length` should be a multiple of 8
-export function getSalt(length) {
+const  getSalt = (length) => {
   const bytes = forge.random.getBytesSync(length);
   const byteArr = forge.util.binary.raw.decode(bytes);
   const salt = forge.util.binary.base58.encode(byteArr);
   return salt.substr(0, length);
-}
+};
 
-export function getPrimordialHash() {
+const  getPrimordialHash = () => {
   const bytes = forge.random.getBytesSync(16);
   return forge.md.sha256
     .create()
     .update(bytes)
     .digest()
     .toHex();
-}
+};
 
 const obfuscate = hash =>
   forge.md.sha384
@@ -91,7 +91,7 @@ const genesisHash = handle => {
 
 // Expects byteString as input
 // Returns [obfuscatedHash, nextHash] as byteString
-export function hashChain(byteStr) {
+const hashChain = (byteStr) => {
   const obfuscatedHash = forge.md.sha384
     .create()
     .update(byteStr)
@@ -104,7 +104,7 @@ export function hashChain(byteStr) {
     .bytes();
 
   return [obfuscatedHash, nextHash];
-}
+};
 
 const encryptChunk = (key, secret) => {
   key.read = 0;

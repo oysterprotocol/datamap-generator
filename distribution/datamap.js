@@ -92,7 +92,8 @@ var genesisHash = _encryption2.default.genesisHash,
     obfuscate = _encryption2.default.obfuscate,
     parseEightCharsOfFilename = _encryption2.default.parseEightCharsOfFilename,
     sideChain = _encryption2.default.sideChain,
-    decryptTreasure = _encryption2.default.decryptTreasure;
+    decryptTreasure = _encryption2.default.decryptTreasure,
+    hashChain = _encryption2.default.hashChain;
 exports.default = {
   generate: generate,
   genesisHash: genesisHash,
@@ -105,5 +106,6 @@ exports.default = {
   obfuscate: obfuscate,
   parseEightCharsOfFilename: parseEightCharsOfFilename,
   sideChain: sideChain,
-  decryptTreasure: decryptTreasure
+  decryptTreasure: decryptTreasure,
+  hashChain: hashChain
 };

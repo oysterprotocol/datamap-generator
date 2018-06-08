@@ -55,7 +55,9 @@ const {
   obfuscate,
   parseEightCharsOfFilename,
   sideChain,
-  decryptTreasure} = Encryption;
+  decryptTreasure,
+  hashChain
+} = Encryption;
 
 export default {
   generate,
@@ -69,5 +71,6 @@ export default {
   obfuscate,
   parseEightCharsOfFilename,
   sideChain,
-  decryptTreasure
+  decryptTreasure,
+  hashChain,
 };

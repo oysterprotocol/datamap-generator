@@ -9,10 +9,6 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 // curl.init() during the unit tests
 
 
-exports.getSalt = getSalt;
-exports.getPrimordialHash = getPrimordialHash;
-exports.hashChain = hashChain;
-
 var _cryptoJs = require("crypto-js");
 
 var _cryptoJs2 = _interopRequireDefault(_cryptoJs);
@@ -50,17 +46,17 @@ var parseEightCharsOfFilename = function parseEightCharsOfFilename(fileName) {
 };
 
 // `length` should be a multiple of 8
-function getSalt(length) {
+var getSalt = function getSalt(length) {
   var bytes = _nodeForge2.default.random.getBytesSync(length);
   var byteArr = _nodeForge2.default.util.binary.raw.decode(bytes);
   var salt = _nodeForge2.default.util.binary.base58.encode(byteArr);
   return salt.substr(0, length);
-}
+};
 
-function getPrimordialHash() {
+var getPrimordialHash = function getPrimordialHash() {
   var bytes = _nodeForge2.default.random.getBytesSync(16);
   return _nodeForge2.default.md.sha256.create().update(bytes).digest().toHex();
-}
+};
 
 var obfuscate = function obfuscate(hash) {
   return _nodeForge2.default.md.sha384.create().update(hash.toString()).digest().toHex();
@@ -102,12 +98,12 @@ var genesisHash = function genesisHash(handle) {
 
 // Expects byteString as input
 // Returns [obfuscatedHash, nextHash] as byteString
-function hashChain(byteStr) {
+var hashChain = function hashChain(byteStr) {
   var obfuscatedHash = _nodeForge2.default.md.sha384.create().update(byteStr).digest().bytes();
   var nextHash = _nodeForge2.default.md.sha256.create().update(byteStr).digest().bytes();
 
   return [obfuscatedHash, nextHash];
-}
+};
 
 var encryptChunk = function encryptChunk(key, secret) {
   key.read = 0;

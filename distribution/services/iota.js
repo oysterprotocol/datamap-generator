@@ -10,7 +10,9 @@ var _iotaLib2 = _interopRequireDefault(_iotaLib);
 
 var _index = require("../config/index");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 var Iota = new _iotaLib2.default();
 var toAddress = function toAddress(string) {

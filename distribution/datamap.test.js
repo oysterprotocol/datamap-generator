@@ -4,16 +4,18 @@ var _datamap = require("./datamap");
 
 var _datamap2 = _interopRequireDefault(_datamap);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
-test("Generates correct number of chunks", function () {
+test("Generates correct number of chunks", function() {
   var chunksCount = 3; // Adds an extra meta chunk
   var datamap = _datamap2.default.generate("handle123", chunksCount);
 
   expect(Object.keys(datamap).length).toBe(chunksCount + 1);
 });
 
-test("Generates correct number of chunks with treasure", function () {
+test("Generates correct number of chunks with treasure", function() {
   var opts = { includeTreasureOffsets: true };
   var chunksCount = 3; // Adds an extra meta chunk and another for treasure.
   var datamap = _datamap2.default.generate("handle123", chunksCount, opts);

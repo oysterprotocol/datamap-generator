@@ -48,14 +48,16 @@ const rawGenerate = (genesisHash, size) => {
 const {
   genesisHash,
   decryptChunk,
-  decryptTest, //TODO
   encryptChunk,
   getPrimordialHash,
   getSalt,
   obfuscate,
   parseEightCharsOfFilename,
   sideChain,
+  sideChainGenerate,
   decryptTreasure,
+  decrypt,
+  encrypt,
   hashChain
 } = Encryption;
 
@@ -64,13 +66,15 @@ export default {
   genesisHash,
   rawGenerate,
   decryptChunk,
-  decryptTest, //TODO
   encryptChunk,
   getPrimordialHash,
   getSalt,
   obfuscate,
   parseEightCharsOfFilename,
   sideChain,
+  sideChainGenerate,
   decryptTreasure,
-  hashChain,
+  decrypt,
+  encrypt,
+  hashChain
 };

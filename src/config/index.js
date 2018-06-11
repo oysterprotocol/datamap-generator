@@ -1,4 +1,4 @@
-export const API = Object.freeze({
+const API = Object.freeze({
   // HOST: "http://localhost:8000",
   // BROKER_NODE_A: "http://localhost:8000",
   // BROKER_NODE_B: "http://localhost:8000",
@@ -10,7 +10,7 @@ export const API = Object.freeze({
   CHUNKS_PER_REQUEST: 10
 });
 
-export const IOTA_API = Object.freeze({
+const IOTA_API = Object.freeze({
   PROVIDER_A: "http://18.188.17.130:14265",
   PROVIDER_B: "http://18.220.1.63:14265",
   PROVIDER_C: "http://18.216.90.80:14265",
@@ -18,20 +18,20 @@ export const IOTA_API = Object.freeze({
   MESSAGE_LENGTH: 2187
 });
 
-export const UPLOAD_STATUSES = Object.freeze({
+const UPLOAD_STATUSES = Object.freeze({
   PENDING: "PENDING",
   SENT: "SENT",
   FAILED: "FAILED"
 });
 
-export const DOWNLOAD_STATUSES = Object.freeze({
+const DOWNLOAD_STATUSES = Object.freeze({
   STANDBY: "STANDBY",
   PENDING: "PENDING",
   RECEIVED: "RECEIVED",
   FAILED: "FAILED"
 });
 
-export const FILE = Object.freeze({
+const FILE = Object.freeze({
   MAX_FILE_SIZE: 200 * 1000,
   CHUNKS_PER_SECTOR: 1000000,
   CHUNK_TYPES: {
@@ -39,3 +39,11 @@ export const FILE = Object.freeze({
     FILE_CONTENTS: "FILE_CONTENTS"
   }
 });
+
+module.exports = {
+  API,
+  DOWNLOAD_STATUSES,
+  FILE,
+  IOTA_API,
+  UPLOAD_STATUSES
+};

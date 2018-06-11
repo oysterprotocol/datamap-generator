@@ -1,6 +1,6 @@
-import CryptoJS from "crypto-js";
 import { sha3_256 } from "js-sha3";
 import forge from "node-forge";
+
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests
 import iotaUtils from "iota.lib.js/lib/utils/asciiToTrytes";
@@ -18,6 +18,8 @@ const TREASURE_PREFIX = _.split("Treasure: ", "")
   .join("");
 
 const parseEightCharsOfFilename = fileName => {
+  // discuss how to handle 'illegal' characters, strip for now
+  fileName = fileName.replace(/[^\w-]/, "");
   fileName = fileName + getSalt(8);
   fileName = fileName.substr(0, 8);
 
@@ -25,14 +27,14 @@ const parseEightCharsOfFilename = fileName => {
 };
 
 // `length` should be a multiple of 8
-const  getSalt = (length) => {
+const getSalt = length => {
   const bytes = forge.random.getBytesSync(length);
   const byteArr = forge.util.binary.raw.decode(bytes);
   const salt = forge.util.binary.base58.encode(byteArr);
   return salt.substr(0, length);
 };
 
-const  getPrimordialHash = () => {
+const getPrimordialHash = () => {
   const bytes = forge.random.getBytesSync(16);
   return forge.md.sha256
     .create()
@@ -41,22 +43,53 @@ const  getPrimordialHash = () => {
     .toHex();
 };
 
-const obfuscate = hash =>
-  forge.md.sha384
-    .create()
-    .update(hash.toString())
-    .digest()
-    .toHex();
+const obfuscate = hash => {
+  const byteStr = forge.util.hexToBytes(hash);
+  const [obfuscatedHash, _genHash] = hashChain(byteStr);
 
-const sideChain = address => sha3_256(address).toString();
+  return forge.util.bytesToHex(obfuscatedHash);
+};
 
-const decryptTest = (text, secretKey) => {
-  //TODO temporary for debugging
-  try {
-    return CryptoJS.AES.decrypt(text, secretKey).toString();
-  } catch (e) {
-    return "";
-  }
+const sideChainGenerate = hash => {
+  const range = _.range(0, 1000);
+
+  const sidechain = _.reduce(
+    range,
+    (chain, n) => {
+      const lastValue = chain[n];
+      const nextValue = sideChain(lastValue);
+      return [...chain, nextValue];
+    },
+    [sideChain(hash)]
+  );
+
+  return sidechain;
+};
+
+const sideChain = hash => sha3_256(hash).toString();
+
+const encrypt = (key, secret, nonce) => {
+  // this method is only for the unit tests
+  let nonceInBytes = forge.util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
+  const cipher = forge.cipher.createCipher(
+    "AES-GCM",
+    forge.util.hexToBytes(key)
+  );
+
+  cipher.start({
+    iv: nonceInBytes,
+    output: null
+  });
+
+  cipher.update(forge.util.createBuffer(forge.util.hexToBytes(secret)));
+
+  cipher.finish();
+
+  const encrypted = cipher.output;
+
+  const tag = cipher.mode.tag;
+
+  return encrypted.toHex() + tag.toHex();
 };
 
 const decryptTreasure = (
@@ -80,6 +113,34 @@ const decryptTreasure = (
     : false;
 };
 
+const decrypt = (key, secret, nonce) => {
+  let nonceInBytes = forge.util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
+
+  const decipher = forge.cipher.createDecipher(
+    "AES-GCM",
+    forge.util.hexToBytes(key)
+  );
+
+  decipher.start({
+    iv: nonceInBytes,
+    output: null,
+    tag: forge.util.hexToBytes(
+      secret.substring(secret.length - TAG_LENGTH, secret.length)
+    )
+  });
+
+  decipher.update(
+    forge.util.createBuffer(
+      forge.util.hexToBytes(secret.substring(0, secret.length - TAG_LENGTH))
+    )
+  );
+  if (!decipher.finish()) {
+    return false;
+  }
+
+  return decipher.output.toHex();
+};
+
 // Genesis hash is not yet obfuscated.
 const genesisHash = handle => {
   const primordialHash = handle.substr(8, 64);
@@ -91,7 +152,7 @@ const genesisHash = handle => {
 
 // Expects byteString as input
 // Returns [obfuscatedHash, nextHash] as byteString
-const hashChain = (byteStr) => {
+const hashChain = byteStr => {
   const obfuscatedHash = forge.md.sha384
     .create()
     .update(byteStr)
@@ -106,65 +167,68 @@ const hashChain = (byteStr) => {
   return [obfuscatedHash, nextHash];
 };
 
-const encryptChunk = (key, secret) => {
+const encryptChunk = (key, idx, secret) => {
   key.read = 0;
-  const iv = forge.random.getBytesSync(16);
+  const iv = getNonce(key, idx);
   const cipher = forge.cipher.createCipher("AES-GCM", key);
 
   cipher.start({
     iv: iv,
-    tagLength: 0
+    tagLength: TAG_LENGTH * 8,
+    additionalData: "binary-encoded string"
   });
 
-  cipher.update(forge.util.createBuffer(CHUNK_PREFIX + secret));
+  cipher.update(forge.util.createBuffer(secret));
   cipher.finish();
 
-  return cipher.output.getBytes() + iv;
+  return cipher.output.bytes() + cipher.mode.tag.bytes() + iv;
 };
 
 const decryptChunk = (key, secret) => {
   key.read = 0;
+
+  // Require a payload of at least one byte to attempt decryption
+  if (secret.length <= IV_LENGTH + TAG_LENGTH) {
+    return "";
+  }
+
   const iv = secret.substr(-IV_LENGTH);
+  const tag = secret.substr(-TAG_LENGTH - IV_LENGTH, TAG_LENGTH);
   const decipher = forge.cipher.createDecipher("AES-GCM", key);
 
   decipher.start({
     iv: iv,
-    tagLength: 0,
-    output: null
+    tag: tag,
+    tagLength: TAG_LENGTH * 8,
+    additionalData: "binary-encoded string"
   });
 
   decipher.update(
-    forge.util.createBuffer(secret.substring(0, secret.length - IV_LENGTH))
+    forge.util.createBuffer(
+      secret.substring(0, secret.length - TAG_LENGTH - IV_LENGTH)
+    )
   );
 
+  // Most likely a treasure chunk, skip
   if (!decipher.finish()) {
-    let msg =
-      "decipher failed to finished in decryptChunk in utils/encryption.js";
-    Raven.captureException(new Error(msg));
     return "";
   }
 
-  const hexedOutput = forge.util.bytesToHex(decipher.output);
-
-  if (_.startsWith(hexedOutput, CHUNK_PREFIX_IN_HEX)) {
-    return forge.util.hexToBytes(
-      hexedOutput.substr(CHUNK_PREFIX_IN_HEX.length, hexedOutput.length)
-    );
-  } else {
-    return "";
-  }
+  return decipher.output.bytes();
 };
 
 export default {
   hashChain,
   genesisHash,
   decryptChunk,
-  decryptTest, //TODO
   encryptChunk,
   getPrimordialHash,
-  getSalt,
   obfuscate,
+  getSalt,
   parseEightCharsOfFilename,
   sideChain,
-  decryptTreasure
+  sideChainGenerate,
+  decryptTreasure,
+  decrypt,
+  encrypt
 };

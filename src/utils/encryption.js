@@ -50,7 +50,7 @@ const obfuscate = hash => {
   return forge.util.bytesToHex(obfuscatedHash);
 };
 
-const sideChainGenerate = address => {
+const sideChainGenerate = hash => {
   const range = _.range(0, 1000);
 
   const sidechain = _.reduce(
@@ -60,13 +60,13 @@ const sideChainGenerate = address => {
       const nextValue = sideChain(lastValue);
       return [...chain, nextValue];
     },
-    [sideChain(address)]
+    [sideChain(hash)]
   );
 
   return sidechain;
 };
 
-const sideChain = address => sha3_256(address).toString();
+const sideChain = hash => sha3_256(hash).toString();
 
 const encrypt = (key, secret, nonce) => {
   // this method is only for the unit tests

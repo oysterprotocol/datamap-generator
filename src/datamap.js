@@ -56,8 +56,6 @@ const {
   sideChain,
   sideChainGenerate,
   decryptTreasure,
-  decrypt,
-  encrypt,
   hashChain
 } = Encryption;
 
@@ -74,7 +72,5 @@ export default {
   sideChain,
   sideChainGenerate,
   decryptTreasure,
-  decrypt,
-  encrypt,
   hashChain
 };

@@ -145,8 +145,6 @@ var genesisHash = _encryption2.default.genesisHash,
   sideChain = _encryption2.default.sideChain,
   sideChainGenerate = _encryption2.default.sideChainGenerate,
   decryptTreasure = _encryption2.default.decryptTreasure,
-  decrypt = _encryption2.default.decrypt,
-  encrypt = _encryption2.default.encrypt,
   hashChain = _encryption2.default.hashChain;
 exports.default = {
   generate: generate,
@@ -161,7 +159,5 @@ exports.default = {
   sideChain: sideChain,
   sideChainGenerate: sideChainGenerate,
   decryptTreasure: decryptTreasure,
-  decrypt: decrypt,
-  encrypt: encrypt,
   hashChain: hashChain
 };

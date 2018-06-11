@@ -125,7 +125,7 @@ var obfuscate = function obfuscate(hash) {
   return _nodeForge2.default.util.bytesToHex(obfuscatedHash);
 };
 
-var sideChainGenerate = function sideChainGenerate(address) {
+var sideChainGenerate = function sideChainGenerate(hash) {
   var range = _lodash2.default.range(0, 1000);
 
   var sidechain = _lodash2.default.reduce(
@@ -135,14 +135,14 @@ var sideChainGenerate = function sideChainGenerate(address) {
       var nextValue = sideChain(lastValue);
       return [].concat(_toConsumableArray(chain), [nextValue]);
     },
-    [sideChain(address)]
+    [sideChain(hash)]
   );
 
   return sidechain;
 };
 
-var sideChain = function sideChain(address) {
-  return (0, _jsSha.sha3_256)(address).toString();
+var sideChain = function sideChain(hash) {
+  return (0, _jsSha.sha3_256)(hash).toString();
 };
 
 var encrypt = function encrypt(key, secret, nonce) {

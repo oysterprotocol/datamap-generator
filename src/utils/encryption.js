@@ -66,7 +66,7 @@ const sideChainGenerate = hash => {
   return sidechain;
 };
 
-const sideChain = hash => sha3_256(hash).toString();
+const sideChain = hash => sha3_256(forge.util.binary.hex.decode(hash));
 
 const encrypt = (key, secret, nonce) => {
   // this method is only for the unit tests

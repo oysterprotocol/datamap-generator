@@ -142,7 +142,7 @@ var sideChainGenerate = function sideChainGenerate(hash) {
 };
 
 var sideChain = function sideChain(hash) {
-  return (0, _jsSha.sha3_256)(hash).toString();
+  return (0, _jsSha.sha3_256)(_nodeForge2.default.util.binary.hex.decode(hash));
 };
 
 var encrypt = function encrypt(key, secret, nonce) {

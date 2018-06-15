@@ -1,17 +1,24 @@
 import { sha3_256 } from "js-sha3";
-import forge from "node-forge";
+import util from "node-forge/lib/util";
+import random from "node-forge/lib/random";
+import md from "node-forge/lib/md";
+import cipher from "node-forge/lib/cipher";
 
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests
 import iotaUtils from "iota.lib.js/lib/utils/asciiToTrytes";
-import _ from "lodash";
+import split from "lodash/split";
+import range from "lodash/range";
+import startsWith from "lodash/startsWith";
+import replace from "lodash/replace";
+import reduce from "lodash/reduce";
 
 // an eth private seed key is 64 characters, the treasure prefix is 20 characters,
 // and our tags are 32 characters
 const PAYLOAD_LENGTH = 64;
 const NONCE_LENGTH = 24;
 const TAG_LENGTH = 32;
-const TREASURE_PREFIX = _.split("Treasure: ", "")
+const TREASURE_PREFIX = split("Treasure: ", "")
   .map(char => {
     return char.charCodeAt(char).toString(16);
   })
@@ -28,15 +35,15 @@ const parseEightCharsOfFilename = fileName => {
 
 // `length` should be a multiple of 8
 const getSalt = length => {
-  const bytes = forge.random.getBytesSync(length);
-  const byteArr = forge.util.binary.raw.decode(bytes);
-  const salt = forge.util.binary.base58.encode(byteArr);
+  const bytes = random.getBytesSync(length);
+  const byteArr = util.binary.raw.decode(bytes);
+  const salt = util.binary.base58.encode(byteArr);
   return salt.substr(0, length);
 };
 
 const getPrimordialHash = () => {
-  const bytes = forge.random.getBytesSync(16);
-  return forge.md.sha256
+  const bytes = random.getBytesSync(16);
+  return md.sha256
     .create()
     .update(bytes)
     .digest()
@@ -44,16 +51,16 @@ const getPrimordialHash = () => {
 };
 
 const obfuscate = hash => {
-  const byteStr = forge.util.hexToBytes(hash);
+  const byteStr = util.hexToBytes(hash);
   const [obfuscatedHash, _genHash] = hashChain(byteStr);
 
-  return forge.util.bytesToHex(obfuscatedHash);
+  return util.bytesToHex(obfuscatedHash);
 };
 
 const sideChainGenerate = hash => {
-  const range = _.range(0, 1000);
+  const range = range(0, 1000);
 
-  const sidechain = _.reduce(
+  const sidechain = reduce(
     range,
     (chain, n) => {
       const lastValue = chain[n];
@@ -66,14 +73,14 @@ const sideChainGenerate = hash => {
   return sidechain;
 };
 
-const sideChain = hash => sha3_256(forge.util.binary.hex.decode(hash));
+//const sideChain = hash => sha3_256(util.binary.hex.decode(hash));
 
 const encrypt = (key, secret, nonce) => {
   // this method is only for the unit tests
-  let nonceInBytes = forge.util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
-  const cipher = forge.cipher.createCipher(
+  let nonceInBytes = util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
+  const cipher = cipher.createCipher(
     "AES-GCM",
-    forge.util.hexToBytes(key)
+    util.hexToBytes(key)
   );
 
   cipher.start({
@@ -81,7 +88,7 @@ const encrypt = (key, secret, nonce) => {
     output: null
   });
 
-  cipher.update(forge.util.createBuffer(forge.util.hexToBytes(secret)));
+  cipher.update(util.createBuffer(util.hexToBytes(secret)));
 
   cipher.finish();
 
@@ -97,7 +104,7 @@ const decryptTreasure = (
   signatureMessageFragment,
   sha256Hash
 ) => {
-  const hexMessage = forge.util.bytesToHex(
+  const hexMessage = util.bytesToHex(
     iotaUtils.fromTrytes(
       signatureMessageFragment.substring(
         0,
@@ -108,30 +115,30 @@ const decryptTreasure = (
 
   const decryptedValue = decrypt(sideChainHash, hexMessage, sha256Hash);
 
-  return _.startsWith(decryptedValue, TREASURE_PREFIX)
-    ? _.replace(decryptedValue, TREASURE_PREFIX, "")
+  return startsWith(decryptedValue, TREASURE_PREFIX)
+    ? replace(decryptedValue, TREASURE_PREFIX, "")
     : false;
 };
 
 const decrypt = (key, secret, nonce) => {
-  let nonceInBytes = forge.util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
+  let nonceInBytes = util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
 
-  const decipher = forge.cipher.createDecipher(
+  const decipher = cipher.createDecipher(
     "AES-GCM",
-    forge.util.hexToBytes(key)
+    util.hexToBytes(key)
   );
 
   decipher.start({
     iv: nonceInBytes,
     output: null,
-    tag: forge.util.hexToBytes(
+    tag: util.hexToBytes(
       secret.substring(secret.length - TAG_LENGTH, secret.length)
     )
   });
 
   decipher.update(
-    forge.util.createBuffer(
-      forge.util.hexToBytes(secret.substring(0, secret.length - TAG_LENGTH))
+    util.createBuffer(
+      util.hexToBytes(secret.substring(0, secret.length - TAG_LENGTH))
     )
   );
   if (!decipher.finish()) {
@@ -144,21 +151,21 @@ const decrypt = (key, secret, nonce) => {
 // Genesis hash is not yet obfuscated.
 const genesisHash = handle => {
   const primordialHash = handle.substr(8, 64);
-  const byteStr = forge.util.hexToBytes(primordialHash);
+  const byteStr = util.hexToBytes(primordialHash);
   const [_obfuscatedHash, genHash] = hashChain(byteStr);
 
-  return forge.util.bytesToHex(genHash);
+  return util.bytesToHex(genHash);
 };
 
 // Expects byteString as input
 // Returns [obfuscatedHash, nextHash] as byteString
 const hashChain = byteStr => {
-  const obfuscatedHash = forge.md.sha384
+  const obfuscatedHash = md.sha384
     .create()
     .update(byteStr)
     .digest()
     .bytes();
-  const nextHash = forge.md.sha256
+  const nextHash = md.sha256
     .create()
     .update(byteStr)
     .digest()
@@ -170,7 +177,7 @@ const hashChain = byteStr => {
 const encryptChunk = (key, idx, secret) => {
   key.read = 0;
   const iv = getNonce(key, idx);
-  const cipher = forge.cipher.createCipher("AES-GCM", key);
+  const cipher = cipher.createCipher("AES-GCM", key);
 
   cipher.start({
     iv: iv,
@@ -178,7 +185,7 @@ const encryptChunk = (key, idx, secret) => {
     additionalData: "binary-encoded string"
   });
 
-  cipher.update(forge.util.createBuffer(secret));
+  cipher.update(util.createBuffer(secret));
   cipher.finish();
 
   return cipher.output.bytes() + cipher.mode.tag.bytes() + iv;
@@ -194,7 +201,7 @@ const decryptChunk = (key, secret) => {
 
   const iv = secret.substr(-IV_LENGTH);
   const tag = secret.substr(-TAG_LENGTH - IV_LENGTH, TAG_LENGTH);
-  const decipher = forge.cipher.createDecipher("AES-GCM", key);
+  const decipher = cipher.createDecipher("AES-GCM", key);
 
   decipher.start({
     iv: iv,
@@ -204,7 +211,7 @@ const decryptChunk = (key, secret) => {
   });
 
   decipher.update(
-    forge.util.createBuffer(
+    util.createBuffer(
       secret.substring(0, secret.length - TAG_LENGTH - IV_LENGTH)
     )
   );

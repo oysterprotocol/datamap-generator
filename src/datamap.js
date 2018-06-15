@@ -2,7 +2,7 @@ import iota from "./services/iota";
 import Encryption from "./utils/encryption";
 
 import { FILE } from "./config";
-import forge from "node-forge";
+import util from "node-forge/lib/util";
 
 export const generate = (genesisHash, size, opts = {}) => {
   let offsets = 1; // Meta chunk
@@ -21,7 +21,7 @@ export const generate = (genesisHash, size, opts = {}) => {
       dataM[i] = iota.toAddress(iota.utils.toTrytes(obfuscatedHash));
       return [dataM, nextHash];
     },
-    [{}, forge.util.hexToBytes(genesisHash)]
+    [{}, util.hexToBytes(genesisHash)]
   );
   return dataMap;
 };
@@ -37,7 +37,7 @@ const rawGenerate = (genesisHash, size) => {
 
       return [dataM, nextHash];
     },
-    [{}, forge.util.hexToBytes(genesisHash)]
+    [{}, util.hexToBytes(genesisHash)]
   );
 
   dataMap[0] = genesisHash;

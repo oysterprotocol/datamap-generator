@@ -1,6 +1,6 @@
 {
   "name": "datamap-generator",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "data map generator for oyster",
   "main": "./distribution/index.js",
   "scripts": {

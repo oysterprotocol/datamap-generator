@@ -73,7 +73,7 @@ const sideChainGenerate = hash => {
   return sidechain;
 };
 
-//const sideChain = hash => sha3_256(util.binary.hex.decode(hash));
+const sideChain = hash => sha3_256(util.binary.hex.decode(hash));
 
 const encrypt = (key, secret, nonce) => {
   // this method is only for the unit tests

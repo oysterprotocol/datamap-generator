@@ -10,7 +10,6 @@ import iotaUtils from "iota.lib.js/lib/utils/asciiToTrytes";
 import split from "lodash/split";
 import startsWith from "lodash/startsWith";
 import replace from "lodash/replace";
-import reduce from "lodash/reduce";
 
 // an eth private seed key is 64 characters, the treasure prefix is 20 characters,
 // and our tags are 32 characters
@@ -59,15 +58,12 @@ const obfuscate = hash => {
 const sideChainGenerate = hash => {
   const range = Array.from(Array(1000), (_, i) => i);
 
-  const sidechain = reduce(
-    range,
-    (chain, n) => {
+  const sidechain = range.reduce((chain, n) => {
       const lastValue = chain[n];
       const nextValue = sideChain(lastValue);
       return [...chain, nextValue];
     },
-    [sideChain(hash)]
-  );
+    [sideChain(hash)]);
 
   return sidechain;
 };

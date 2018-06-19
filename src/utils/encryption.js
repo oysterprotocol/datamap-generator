@@ -8,7 +8,6 @@ import cipher from "node-forge/lib/cipher";
 // curl.init() during the unit tests
 import iotaUtils from "iota.lib.js/lib/utils/asciiToTrytes";
 import split from "lodash/split";
-import range from "lodash/range";
 import startsWith from "lodash/startsWith";
 import replace from "lodash/replace";
 import reduce from "lodash/reduce";
@@ -58,7 +57,7 @@ const obfuscate = hash => {
 };
 
 const sideChainGenerate = hash => {
-  const range = range(0, 1000);
+  const range = Array.from(Array(1000), (_, i) => i);
 
   const sidechain = reduce(
     range,

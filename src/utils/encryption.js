@@ -7,7 +7,6 @@ import cipher from "node-forge/lib/cipher";
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests
 import iotaUtils from "iota.lib.js/lib/utils/asciiToTrytes";
-import split from "lodash/split";
 import startsWith from "lodash/startsWith";
 import replace from "lodash/replace";
 
@@ -16,7 +15,7 @@ import replace from "lodash/replace";
 const PAYLOAD_LENGTH = 64;
 const NONCE_LENGTH = 24;
 const TAG_LENGTH = 32;
-const TREASURE_PREFIX = split("Treasure: ", "")
+const TREASURE_PREFIX = "Treasure: ".split("")
   .map(char => {
     return char.charCodeAt(char).toString(16);
   })

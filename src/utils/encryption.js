@@ -7,18 +7,15 @@ import cipher from "node-forge/lib/cipher";
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests
 import iotaUtils from "iota.lib.js/lib/utils/asciiToTrytes";
-import split from "lodash/split";
-import range from "lodash/range";
 import startsWith from "lodash/startsWith";
 import replace from "lodash/replace";
-import reduce from "lodash/reduce";
 
 // an eth private seed key is 64 characters, the treasure prefix is 20 characters,
 // and our tags are 32 characters
 const PAYLOAD_LENGTH = 64;
 const NONCE_LENGTH = 24;
 const TAG_LENGTH = 32;
-const TREASURE_PREFIX = split("Treasure: ", "")
+const TREASURE_PREFIX = "Treasure: ".split("")
   .map(char => {
     return char.charCodeAt(char).toString(16);
   })
@@ -58,17 +55,14 @@ const obfuscate = hash => {
 };
 
 const sideChainGenerate = hash => {
-  const range = range(0, 1000);
+  const range = Array.from(Array(1000), (_, i) => i);
 
-  const sidechain = reduce(
-    range,
-    (chain, n) => {
+  const sidechain = range.reduce((chain, n) => {
       const lastValue = chain[n];
       const nextValue = sideChain(lastValue);
       return [...chain, nextValue];
     },
-    [sideChain(hash)]
-  );
+    [sideChain(hash)]);
 
   return sidechain;
 };

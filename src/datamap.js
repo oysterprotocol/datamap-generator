@@ -27,10 +27,9 @@ export const generate = (genesisHash, size, opts = {}) => {
 };
 
 const rawGenerate = (genesisHash, size) => {
-  const keys = _.range(1, size);
+  const keys =  Array.from(Array(size), (_, i) => i + 1);
 
-  const [dataMap, _hash] = _.reduce(
-    keys,
+  const [dataMap, _hash] = keys.reduce(
     ([dataM, hash], i) => {
       const [_obfuscatedHash, nextHash] = Encryption.hashChain(hash);
       dataM[i] = nextHash;

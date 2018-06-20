@@ -19,5 +19,10 @@ cache:
     - ".eslintcache"
     - "node_modules"
 
+deploy:
+  provider: npm
+  email: "jared.farago@gmail.com"
+  api_key: "20189b3a-58c8-41fb-8c20-65864395a046"
+
 script:
   - yarn && yarn test

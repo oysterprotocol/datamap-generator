@@ -1,7 +1,7 @@
 import { sha3_256 } from "js-sha3";
 import util from "node-forge/lib/util";
 import random from "node-forge/lib/random";
-import md from "node-forge";
+import md from "node-forge/lib/sha512";
 import cipher from "node-forge/lib/cipher";
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests

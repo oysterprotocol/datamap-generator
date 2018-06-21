@@ -1,9 +1,8 @@
 import { sha3_256 } from "js-sha3";
 import util from "node-forge/lib/util";
 import random from "node-forge/lib/random";
-import md from "node-forge/lib/md";
+import md from "node-forge";
 import cipher from "node-forge/lib/cipher";
-
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests
 import iotaUtils from "iota.lib.js/lib/utils/asciiToTrytes";
@@ -72,23 +71,23 @@ const sideChain = hash => sha3_256(util.binary.hex.decode(hash));
 const encrypt = (key, secret, nonce) => {
   // this method is only for the unit tests
   let nonceInBytes = util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
-  const cipher = cipher.createCipher(
+  const ciph = cipher.createCipher(
     "AES-GCM",
     util.hexToBytes(key)
   );
 
-  cipher.start({
+  ciph.start({
     iv: nonceInBytes,
     output: null
   });
 
-  cipher.update(util.createBuffer(util.hexToBytes(secret)));
+  ciph.update(util.createBuffer(util.hexToBytes(secret)));
 
-  cipher.finish();
+  ciph.finish();
 
-  const encrypted = cipher.output;
+  const encrypted = ciph.output;
 
-  const tag = cipher.mode.tag;
+  const tag = ciph.mode.tag;
 
   return encrypted.toHex() + tag.toHex();
 };

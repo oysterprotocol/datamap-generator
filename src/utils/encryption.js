@@ -1,7 +1,7 @@
 import { sha3_256 } from "js-sha3";
 import util from "node-forge/lib/util";
 import random from "node-forge/lib/random";
-import md from "node-forge/lib/sha512";
+import sha512 from "node-forge/lib/sha512";
 import cipher from "node-forge/lib/cipher";
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests
@@ -39,7 +39,7 @@ const getSalt = length => {
 
 const getPrimordialHash = () => {
   const bytes = random.getBytesSync(16);
-  return md.sha256
+  return sha512.sha256
     .create()
     .update(bytes)
     .digest()
@@ -153,12 +153,12 @@ const genesisHash = handle => {
 // Expects byteString as input
 // Returns [obfuscatedHash, nextHash] as byteString
 const hashChain = byteStr => {
-  const obfuscatedHash = md.sha384
+  const obfuscatedHash = sha512.sha384
     .create()
     .update(byteStr)
     .digest()
     .bytes();
-  const nextHash = md.sha256
+  const nextHash = sha512.sha256
     .create()
     .update(byteStr)
     .digest()

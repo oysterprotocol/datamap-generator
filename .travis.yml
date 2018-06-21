@@ -1,28 +1,23 @@
 language: node_js
-
 node_js:
-  - "8"
-
+- '8'
 sudo: false
-
 branches:
-   only:
-   - master
-
+  only:
+  - master
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH="$HOME/.yarn/bin:$PATH"
-
+- curl -o- -L https://yarnpkg.com/install.sh | bash
+- export PATH="$HOME/.yarn/bin:$PATH"
 cache:
   yarn: true
   directories:
-    - ".eslintcache"
-    - "node_modules"
-
+  - ".eslintcache"
+  - node_modules
 deploy:
   provider: npm
-  email: "jared.farago@gmail.com"
-  api_key: "20189b3a-58c8-41fb-8c20-65864395a046"
-
+  email: jared.farago@gmail.com
+  api_key: NPM_TOKEN
 script:
-  - yarn && yarn test
+- yarn && yarn test
+dd:
+  secure: zKlOq9cgTr5I9nSbzeQvLhG1jwR2PjtmxVE3VyCX4vUk4Z9zPfKfQNSC5Uk30PxK4W8QIpBi/d+XaaBkETEisWVPyB7n8TWoHXLGjneBimNfzEAmcDN9ncgjn+23VOFTv1oD1ILxmQmcsRy9IxxxkyTmzL4KvFjyIkyec+la1k1JA5i2pEySgKcgwiQXzEdfoBJlgr0HZcYQpwcg+/gv+yRevdeWQ/U7Zl6as5ZUInoqLxGUcWj79ef9ueF6rcxQYfDalwFw1MXiw+NCGOqKemAA4FUEXoBAyYLQddwtSr091BAYrXrPndFTfc5atXF+jB8OhZgkzvk8//D92brP+Bwv0Gd8PdbPmivqIe83feL7yVIF20w9j1EGGyXi/krnZThFVvcfJjFokf18KhXZon4v3Qs/GXCAoDV1B9fNAHwP/IRZ67sUEI0hrEn+b4u73p7BOXpbdif+WMfEb/rY3hznrDEIGI4LDU1Dhh6V21Nso3HNc6BMnZgcZlohuo33k33EhRlh3IZeI9nWHU6dkFU2yw1IOTQc0KDhHgqBCXKaAXxGCasr5LYjA+tBXiKRdcMmPD9CLLwkBnpMvElurnD/0gyb/YA4R2Cyw2ldEIJsHtTL2JWAhJYVUOKNsz4Uoys93KfeYc5y9HOQks81bCc0KitoHHHCnjOVQ9f3KZc=

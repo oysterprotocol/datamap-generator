@@ -5,7 +5,7 @@
   "main": "./src/index.js",
   "scripts": {
     "test": "jest",
-    "test-forever": "jest --watchAll",
+    "test:watch": "jest --watch --colors",
     "build": "babel src --presets babel-preset-es2015 --out-dir distribution",
     "prepublish": "yarn build"
   },

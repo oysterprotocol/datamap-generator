@@ -26,6 +26,8 @@ deploy:
   api_key:
     secure: nmmy/kdnOcTia97ihZ7I1ySjufVQSmCO+H8szLGhxIc+7Fwk43Y6r8EooXDWXwHHWh/Pbh1YveePunLdPjyRGwvdmMV6yG2zDWQrqd24gHEo1nGbHUuQoNN3F9SYMeKjWMUapy0BqfTMf9wxfifxIEWkgFVBgWqvIUOHQG+Wy8M2gLpGc1kLqNV1euU73GJN+pOqxuuGtR/eyEXRTHAU7oQTMEGnG4mtmDr3P9EfUW0yYniFLxQIBJoBiWd5x5msnqVVTUsSgBoe7ycse6/HT1xiipMBxClhmWM8Xmnldk/Zo+Xla5mauP3E3HIrknxHNB7Uh9SGhMNUsyo57NTO+CX84FntAeG8mm85feQGWP305dA/yS9HbcReYz4lU4Bt0S/hwruC05E/5AKnK5raqmvkqVXx1lgnkbBjfkAce9fbGTk19kNRKzoQGS6b5DnfpF8eb/CnknpUMR+J06Z+FA6tJY6q/5zVLfei64x3hZtNFR9R04F7o8tnDEPwiDYlKZb77QJBxtRLCPVvrbeGahw+aHaZlmvo0kzOH6gpsS3pWqXkcUpesxV6PX7kjnawY517efxH2U0seVGNSlBeCNP723I1iyfvUWS0O18WEOlew1BhfSetIdlmyZVjh4e6Bd+px9l0+yvt7H0tHGN4ekgbickNETbrLpIZ8MvBeO8=
 script:
-- yarn && yarn test
+- yarn && yarn test:coverage
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+- ./cc-test-reporter sum-coverage coverage/coverage-final.json
+- ./cc-test-reporter upload-coverage
+- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

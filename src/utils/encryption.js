@@ -40,7 +40,7 @@ const getSalt = length => {
 
 const getPrimordialHash = () => {
   const bytes = random.getBytesSync(16);
-  return sha512.sha256
+  return sha256
     .create()
     .update(bytes)
     .digest()

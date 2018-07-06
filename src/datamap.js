@@ -27,7 +27,7 @@ export const generate = (genesisHash, size, opts = {}) => {
 };
 
 const rawGenerate = (genesisHash, size) => {
-  const keys =  Array.from(Array(size), (_, i) => i + 1);
+  const keys = Array.from(Array(size), (_, i) => i + 1);
 
   const [dataMap, _hash] = keys.reduce(
     ([dataM, hash], i) => {

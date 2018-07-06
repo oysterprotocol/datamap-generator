@@ -2,6 +2,7 @@ import { sha3_256 } from "js-sha3";
 import util from "node-forge/lib/util";
 import random from "node-forge/lib/random";
 import sha512 from "node-forge/lib/sha512";
+import sha256 from "node-forge/lib/sha256";
 import cipher from "node-forge/lib/cipher";
 // can't import iota from services/iota because the iota.lib.js tries to run
 // curl.init() during the unit tests
@@ -14,7 +15,8 @@ import replace from "lodash/replace";
 const PAYLOAD_LENGTH = 64;
 const NONCE_LENGTH = 24;
 const TAG_LENGTH = 32;
-const TREASURE_PREFIX = "Treasure: ".split("")
+const TREASURE_PREFIX = "Treasure: "
+  .split("")
   .map(char => {
     return char.charCodeAt(char).toString(16);
   })
@@ -39,7 +41,7 @@ const getSalt = length => {
 
 const getPrimordialHash = () => {
   const bytes = random.getBytesSync(16);
-  return sha512.sha256
+  return sha256
     .create()
     .update(bytes)
     .digest()
@@ -56,12 +58,14 @@ const obfuscate = hash => {
 const sideChainGenerate = hash => {
   const range = Array.from(Array(1000), (_, i) => i);
 
-  const sidechain = range.reduce((chain, n) => {
+  const sidechain = range.reduce(
+    (chain, n) => {
       const lastValue = chain[n];
       const nextValue = sideChain(lastValue);
       return [...chain, nextValue];
     },
-    [sideChain(hash)]);
+    [sideChain(hash)]
+  );
 
   return sidechain;
 };
@@ -71,10 +75,7 @@ const sideChain = hash => sha3_256(util.binary.hex.decode(hash));
 const encrypt = (key, secret, nonce) => {
   // this method is only for the unit tests
   let nonceInBytes = util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
-  const ciph = cipher.createCipher(
-    "AES-GCM",
-    util.hexToBytes(key)
-  );
+  const ciph = cipher.createCipher("AES-GCM", util.hexToBytes(key));
 
   ciph.start({
     iv: nonceInBytes,
@@ -116,10 +117,7 @@ const decryptTreasure = (
 const decrypt = (key, secret, nonce) => {
   let nonceInBytes = util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
 
-  const decipher = cipher.createDecipher(
-    "AES-GCM",
-    util.hexToBytes(key)
-  );
+  const decipher = cipher.createDecipher("AES-GCM", util.hexToBytes(key));
 
   decipher.start({
     iv: nonceInBytes,
@@ -158,7 +156,7 @@ const hashChain = byteStr => {
     .update(byteStr)
     .digest()
     .bytes();
-  const nextHash = sha512.sha256
+  const nextHash = sha256
     .create()
     .update(byteStr)
     .digest()

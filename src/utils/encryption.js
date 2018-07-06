@@ -15,7 +15,8 @@ import replace from "lodash/replace";
 const PAYLOAD_LENGTH = 64;
 const NONCE_LENGTH = 24;
 const TAG_LENGTH = 32;
-const TREASURE_PREFIX = "Treasure: ".split("")
+const TREASURE_PREFIX = "Treasure: "
+  .split("")
   .map(char => {
     return char.charCodeAt(char).toString(16);
   })
@@ -57,12 +58,14 @@ const obfuscate = hash => {
 const sideChainGenerate = hash => {
   const range = Array.from(Array(1000), (_, i) => i);
 
-  const sidechain = range.reduce((chain, n) => {
+  const sidechain = range.reduce(
+    (chain, n) => {
       const lastValue = chain[n];
       const nextValue = sideChain(lastValue);
       return [...chain, nextValue];
     },
-    [sideChain(hash)]);
+    [sideChain(hash)]
+  );
 
   return sidechain;
 };
@@ -72,10 +75,7 @@ const sideChain = hash => sha3_256(util.binary.hex.decode(hash));
 const encrypt = (key, secret, nonce) => {
   // this method is only for the unit tests
   let nonceInBytes = util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
-  const ciph = cipher.createCipher(
-    "AES-GCM",
-    util.hexToBytes(key)
-  );
+  const ciph = cipher.createCipher("AES-GCM", util.hexToBytes(key));
 
   ciph.start({
     iv: nonceInBytes,
@@ -117,10 +117,7 @@ const decryptTreasure = (
 const decrypt = (key, secret, nonce) => {
   let nonceInBytes = util.hexToBytes(nonce.substring(0, NONCE_LENGTH));
 
-  const decipher = cipher.createDecipher(
-    "AES-GCM",
-    util.hexToBytes(key)
-  );
+  const decipher = cipher.createDecipher("AES-GCM", util.hexToBytes(key));
 
   decipher.start({
     iv: nonceInBytes,

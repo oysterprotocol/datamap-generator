@@ -2,12 +2,12 @@
   "name": "datamap-generator",
   "version": "1.0.6",
   "description": "data map generator for oyster",
-  "main": "./distribution/index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch --colors",
-    "build": "babel src --presets babel-preset-es2015 --out-dir distribution",
+    "build": "babel src --presets babel-preset-es2015 --out-dir dist",
     "prepublish": "yarn build"
   },
   "author": "Jared Farago",

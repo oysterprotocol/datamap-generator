@@ -1,17 +1,23 @@
 {
   "name": "datamap-generator",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "data map generator for oyster",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch --colors",
     "build": "babel src --presets babel-preset-es2015 --out-dir dist",
-    "prepublish": "yarn build"
+    "prepublishOnly": "yarn && yarn build"
   },
-  "author": "Jared Farago",
   "license": "MIT",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/oysterprotocol/datamap-generator.git"
+  },
   "dependencies": {
     "js-sha3": "^0.7.0",
     "lodash": "^4.17.5"

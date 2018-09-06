@@ -5,7 +5,7 @@ import { FILE } from "./config";
 import util from "node-forge/lib/util";
 
 export const generate = (genesisHash, size, opts = {}) => {
-  let offsets = 1; // Meta chunk
+  let offsets = 1 - !!opts.raw; // Meta chunk
 
   if (opts.includeTreasureOffsets) {
     // Includes 1 treasure per sector.
@@ -13,36 +13,29 @@ export const generate = (genesisHash, size, opts = {}) => {
     offsets += numTreasureChunks;
   }
 
-  const keys = Array.from(Array(size + offsets), (_, i) => i);
+  const keys = Array.from(Array(size + offsets), (_, i) => i + !!opts.raw);
 
   const [dataMap] = keys.reduce(
     ([dataM, hash], i) => {
       const [obfuscatedHash, nextHash] = Encryption.hashChain(hash);
-      dataM[i] = iota.toAddress(iota.utils.toTrytes(obfuscatedHash));
-      return [dataM, nextHash];
-    },
-    [{}, util.hexToBytes(genesisHash)]
-  );
-  return dataMap;
-};
-
-const rawGenerate = (genesisHash, size) => {
-  const keys = Array.from(Array(size), (_, i) => i + 1);
-
-  const [dataMap, _hash] = keys.reduce(
-    ([dataM, hash], i) => {
-      const [_obfuscatedHash, nextHash] = Encryption.hashChain(hash);
-      dataM[i] = nextHash;
-
+      dataM[i] = opts.raw
+        ? nextHash
+        : iota.toAddress(iota.utils.toTrytes(obfuscatedHash));
       return [dataM, nextHash];
     },
     [{}, util.hexToBytes(genesisHash)]
   );
 
-  dataMap[0] = genesisHash;
+  if (opts.raw)
+    dataMap[0] = genesisHash;
 
   return dataMap;
 };
+
+const rawGenerate = (genesisHash, size, opts = {}) => {
+  opts.raw = true
+  return generate(genesisHash, size, opts)
+}
 
 const {
   genesisHash,

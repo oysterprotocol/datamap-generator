@@ -26,7 +26,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var generate = exports.generate = function generate(genesisHash, size) {
   var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  var offsets = 1; // Meta chunk
+  var offsets = 1 - !!opts.raw; // Meta chunk
 
   if (opts.includeTreasureOffsets) {
     // Includes 1 treasure per sector.
@@ -35,7 +35,7 @@ var generate = exports.generate = function generate(genesisHash, size) {
   }
 
   var keys = Array.from(Array(size + offsets), function (_, i) {
-    return i;
+    return i + !!opts.raw;
   });
 
   var _keys$reduce = keys.reduce(function (_ref, i) {
@@ -48,41 +48,22 @@ var generate = exports.generate = function generate(genesisHash, size) {
         obfuscatedHash = _Encryption$hashChain2[0],
         nextHash = _Encryption$hashChain2[1];
 
-    dataM[i] = _iota2.default.toAddress(_iota2.default.utils.toTrytes(obfuscatedHash));
+    dataM[i] = opts.raw ? nextHash : _iota2.default.toAddress(_iota2.default.utils.toTrytes(obfuscatedHash));
     return [dataM, nextHash];
   }, [{}, _util2.default.hexToBytes(genesisHash)]),
       _keys$reduce2 = _slicedToArray(_keys$reduce, 1),
       dataMap = _keys$reduce2[0];
 
+  if (opts.raw) dataMap[0] = genesisHash;
+
   return dataMap;
 };
 
 var rawGenerate = function rawGenerate(genesisHash, size) {
-  var keys = Array.from(Array(size), function (_, i) {
-    return i + 1;
-  });
+  var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  var _keys$reduce3 = keys.reduce(function (_ref3, i) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-        dataM = _ref4[0],
-        hash = _ref4[1];
-
-    var _Encryption$hashChain3 = _encryption2.default.hashChain(hash),
-        _Encryption$hashChain4 = _slicedToArray(_Encryption$hashChain3, 2),
-        _obfuscatedHash = _Encryption$hashChain4[0],
-        nextHash = _Encryption$hashChain4[1];
-
-    dataM[i] = nextHash;
-
-    return [dataM, nextHash];
-  }, [{}, _util2.default.hexToBytes(genesisHash)]),
-      _keys$reduce4 = _slicedToArray(_keys$reduce3, 2),
-      dataMap = _keys$reduce4[0],
-      _hash = _keys$reduce4[1];
-
-  dataMap[0] = genesisHash;
-
-  return dataMap;
+  opts.raw = true;
+  return generate(genesisHash, size, opts);
 };
 
 var genesisHash = _encryption2.default.genesisHash,

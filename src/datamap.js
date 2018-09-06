@@ -4,7 +4,7 @@ import Encryption from "./utils/encryption";
 import { FILE } from "./config";
 import util from "node-forge/lib/util";
 
-export const generate = (genesisHash, size, opts = {}) => {
+const generate = (genesisHash, size, opts = {}) => {
   let offsets = 1; // Meta chunk
 
   if (opts.includeTreasureOffsets) {
@@ -46,30 +46,16 @@ const rawGenerate = (genesisHash, size) => {
 
 const {
   genesisHash,
-  decryptChunk,
-  encryptChunk,
-  getPrimordialHash,
-  getSalt,
-  obfuscate,
-  parseEightCharsOfFilename,
-  sideChain,
   sideChainGenerate,
   decryptTreasure,
   hashChain
 } = Encryption;
 
 export default {
+  decryptTreasure,
   generate,
   genesisHash,
+  hashChain,
   rawGenerate,
-  decryptChunk,
-  encryptChunk,
-  getPrimordialHash,
-  getSalt,
-  obfuscate,
-  parseEightCharsOfFilename,
-  sideChain,
-  sideChainGenerate,
-  decryptTreasure,
-  hashChain
+  sideChainGenerate
 };
